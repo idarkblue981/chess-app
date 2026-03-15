@@ -11,7 +11,6 @@ from ai import ChessAI
 def make_new_game(ai_instance, elo=1400):
     """Creează un engine nou și resetează AI-ul."""
     engine = ChessEngine()
-    # Refolosim instanța AI existentă (nu o repornim)
     return engine
 
 
@@ -66,17 +65,14 @@ def main():
     while running:
         for event in pygame.event.get():
 
-            # ── Ieșire fereastră ──────────────────────────────────────
             if event.type == pygame.QUIT:
                 running = False
 
-            # ── Scroll rotița ─────────────────────────────────────────
             elif event.type == pygame.MOUSEWHEEL:
                 mx, _ = pygame.mouse.get_pos()
                 if mx < settings.OFFSET_X - 10:
                     ui.handle_scroll(-event.y)
 
-            # ── Taste săgeți / Home / End ─────────────────────────────
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE and show_about:
                     show_about = False
@@ -89,17 +85,15 @@ def main():
                 elif event.key == pygame.K_END:
                     ui.scroll_to_bottom(engine.move_history_san)
 
-            # ── Click stânga ──────────────────────────────────────────
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = event.pos
 
-                # --- Popup About (are prioritate maximă) ---
                 if show_about:
                     if about_close_rect and about_close_rect.collidepoint(mouse_pos):
                         show_about = False
                     continue   # ignorăm orice alt click cât timp About e deschis
 
-                # --- Butoane panou dreapta ---
+                # Butoane panou dreapta
                 btn_action = _check_button_click(ui.btn_rects, mouse_pos)
                 if btn_action == 'restart':
                     engine       = make_new_game(ai)
@@ -126,12 +120,10 @@ def main():
                     running = False
                     continue
 
-                # --- Scrollbar ---
                 consumed = ui.on_mouse_down(mouse_pos)
                 if consumed:
                     continue
 
-                # --- Logica joc (doar dacă e rândul jucătorului) ---
                 if engine.board.turn != player_color:
                     continue   # nu e rândul tău
 
@@ -175,11 +167,9 @@ def main():
                         waiting_for_promotion = True
                         promotion_data        = result[1]
 
-            # ── Mouse eliberat ────────────────────────────────────────
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 ui.on_mouse_up()
 
-            # ── Mouse mișcat ──────────────────────────────────────────
             elif event.type == pygame.MOUSEMOTION:
                 ui.on_mouse_motion(event.pos)
 
@@ -201,9 +191,7 @@ def main():
     sys.exit()
 
 
-# ------------------------------------------------------------------ #
-# FUNCȚII AJUTĂTOARE                                                  #
-# ------------------------------------------------------------------ #
+# ALTE FUNCȚII
 
 def _check_button_click(btn_rects, mouse_pos):
     """Returnează cheia butonului apăsat sau None."""
