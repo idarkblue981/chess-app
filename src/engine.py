@@ -1,5 +1,5 @@
 import chess
-import settings # <--- Importăm settings
+import settings
 
 class ChessEngine:
     def __init__(self):
@@ -10,7 +10,7 @@ class ChessEngine:
 
     def get_square_under_mouse(self, mouse_pos):
         x, y = mouse_pos
-        # Folosim valorile globale direct
+        # valorile globale
         col = (x - settings.OFFSET_X) // settings.SQ_SIZE
         row = 7 - ((y - settings.OFFSET_Y) // settings.SQ_SIZE)
         
@@ -69,7 +69,6 @@ class ChessEngine:
         if self.selected_square is not None:
             piece = self.board.piece_at(self.selected_square)
             
-            # 1. LOGICA PENTRU PROMOVARE (Doar detectăm, nu mutăm încă)
             if piece and piece.piece_type == chess.PAWN:
                 dest_rank = chess.square_rank(square)
                 if (piece.color == chess.WHITE and dest_rank == 7) or \
@@ -79,26 +78,21 @@ class ChessEngine:
                     if move_test in self.board.legal_moves:
                         from_sq = self.selected_square
                         self.selected_square = None 
-                        # Returnăm DOAR asta. Main.py se va ocupa de restul.
                         return "promotion_needed", (from_sq, square)
 
-            # 2. LOGICA PENTRU MUTARE NORMALĂ
             move = chess.Move(self.selected_square, square)
             if move in self.board.legal_moves:
-                # Aici salvăm mutarea în istoric și mutăm pe tablă
                 self.move_history_san.append(self.board.san(move)) 
                 self.board.push(move)
                 self.selected_square = None
                 return "move"
             else:
-                # Schimbăm selecția dacă am dat click pe o altă piesă proprie
                 new_piece = self.board.piece_at(square)
                 if new_piece and new_piece.color == self.board.turn:
                     self.selected_square = square
                 else:
                     self.selected_square = None
         else:
-            # Prima selecție
             piece = self.board.piece_at(square)
             if piece and piece.color == self.board.turn:
                 self.selected_square = square
