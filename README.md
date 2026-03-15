@@ -6,7 +6,8 @@ A modern desktop chess app, developed with Python and Pygame. It uses Stockfish 
 
 ## About
 * **Cool interface:** Fullscreen window.
-* **Lateral Panels:** * **Left:** Move history in algebraic chess notation.
+* **Lateral Panels:**
+    * **Left:** Move history in algebraic chess notation.
     * **Right:** Panel for other settings.
 * **Stockfish Engine:** ELO: 1400.
 * **UI Design:** Move suggestions and highlite the last move.
