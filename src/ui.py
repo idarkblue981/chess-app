@@ -10,7 +10,7 @@ _LINE_HEIGHT = 25
 _SB_W        = 12
 _SB_PAD      = 6
 
-# Text About — modifică după dorință
+# Text About
 ABOUT_TEXT = [
     "Chess vs Stockfish ELO 1400",
     "",
@@ -54,13 +54,9 @@ class ChessUI:
         self._sb_max_scroll    = 0
         self._sb_visible       = False
 
-        # Butoane panou dreapta — rect-urile sunt recalculate la fiecare draw
-        self.btn_rects = {}   # { 'restart': Rect, 'restart_colors': Rect,
-                              #   'about': Rect, 'exit': Rect }
-
-    # ------------------------------------------------------------------ #
-    # HELPER SCROLLBAR                                                    #
-    # ------------------------------------------------------------------ #
+        # Butoane panou dreapta — rect-urile sunt recalculate la fiecare draw, sau ceva de genul
+        self.btn_rects = {}
+    
     def _calc_scroll_metrics(self, move_stack):
         panel_width     = settings.OFFSET_X - 10
         visible_h       = settings.HEIGHT - _START_Y - 10
@@ -79,9 +75,6 @@ class ChessUI:
 
         return visible_h, total_content_h, max_scroll, track_rect, thumb_rect
 
-    # ------------------------------------------------------------------ #
-    # PANOURI LATERALE                                                    #
-    # ------------------------------------------------------------------ #
     def draw_panels(self):
         panel_color = (40, 40, 40)
         line_color  = (100, 100, 100)
@@ -102,14 +95,12 @@ class ChessUI:
                          (right_start_x, 0),
                          (right_start_x, settings.HEIGHT), 2)
 
-    # ------------------------------------------------------------------ #
-    # BUTOANE PANOU DREAPTA                                               #
-    # ------------------------------------------------------------------ #
+
     def draw_right_panel_buttons(self, player_color=chess.WHITE):
         """Desenează cele 4 butoane centrate în panoul drept."""
         right_start_x = settings.OFFSET_X + settings.BOARD_SIZE + 10
         panel_w       = settings.WIDTH - right_start_x
-        panel_cx      = right_start_x + panel_w // 2   # centrul orizontal
+        panel_cx      = right_start_x + panel_w // 2
 
         btn_w   = max(160, panel_w - 40)
         btn_h   = 55
@@ -153,7 +144,6 @@ class ChessUI:
             pygame.draw.rect(self.screen, color, rect, border_radius=8)
             pygame.draw.rect(self.screen, (150, 150, 150), rect, 2, border_radius=8)
 
-            # Text (suportă \n pentru două rânduri)
             lines = label.split('\n')
             line_h = self.btn_font.get_height()
             total_text_h = len(lines) * line_h + (len(lines) - 1) * 4
@@ -173,9 +163,7 @@ class ChessUI:
         if cy < settings.HEIGHT - 20:
             self.screen.blit(color_surf, (cx, cy))
 
-    # ------------------------------------------------------------------ #
-    # HISTORIC MUTĂRI CU SCROLLBAR                                        #
-    # ------------------------------------------------------------------ #
+
     def draw_move_history(self, move_stack):
         text_color  = (200, 200, 200)
         panel_width = settings.OFFSET_X - 10
@@ -223,9 +211,7 @@ class ChessUI:
             color  = (230, 230, 230) if (self._sb_dragging or hover) else (160, 160, 160)
             pygame.draw.rect(self.screen, color, thumb_rect, border_radius=6)
 
-    # ------------------------------------------------------------------ #
-    # POPUP ABOUT                                                         #
-    # ------------------------------------------------------------------ #
+    
     def draw_about_popup(self):
         """Fereastră modală cu informații despre proiect."""
         # Fundal semi-transparent
@@ -236,7 +222,7 @@ class ChessUI:
         line_h   = self.about_font.get_height() + 6
         padding  = 30
         popup_w  = min(500, settings.WIDTH - 100)
-        popup_h  = len(ABOUT_TEXT) * line_h + padding * 2 + 50  # +50 pentru titlu
+        popup_h  = len(ABOUT_TEXT) * line_h + padding * 2 + 50
         popup_x  = (settings.WIDTH  - popup_w) // 2
         popup_y  = (settings.HEIGHT - popup_h) // 2
 
@@ -271,11 +257,9 @@ class ChessUI:
         self.screen.blit(close_surf,
                          (close_rect.x + (close_w - close_surf.get_width()) // 2,
                           close_rect.y + (close_h - close_surf.get_height()) // 2))
-        return close_rect   # îl returnăm ca main.py să detecteze click-ul
+        return close_rect
 
-    # ------------------------------------------------------------------ #
-    # SCROLL API                                                          #
-    # ------------------------------------------------------------------ #
+
     def handle_scroll(self, delta):
         self.scroll_y += delta * _LINE_HEIGHT
         self.scroll_y  = max(0, self.scroll_y)
@@ -286,9 +270,8 @@ class ChessUI:
         total_content_h = total_pairs * _LINE_HEIGHT
         self.scroll_y   = max(0, total_content_h - visible_h)
 
-    # ------------------------------------------------------------------ #
-    # MOUSE EVENTS SCROLLBAR                                              #
-    # ------------------------------------------------------------------ #
+
+    
     def on_mouse_down(self, pos):
         if not self._sb_visible:
             return False
@@ -321,9 +304,8 @@ class ChessUI:
         self.scroll_y = self._sb_drag_start_sc + delta_y * (self._sb_max_scroll / move_range)
         self.scroll_y = max(0, min(self.scroll_y, self._sb_max_scroll))
 
-    # ------------------------------------------------------------------ #
-    # IMAGINI PIESE                                                       #
-    # ------------------------------------------------------------------ #
+
+
     def load_images(self):
         pieces = [
             'white_pawn', 'white_knight', 'white_bishop',
@@ -340,9 +322,7 @@ class ChessUI:
             else:
                 print(f"EROARE: Nu gasesc piesa la: {path}")
 
-    # ------------------------------------------------------------------ #
-    # TABLĂ ȘI PIESE                                                      #
-    # ------------------------------------------------------------------ #
+
     def draw_board(self, highlight_squares=[]):
         for r in range(settings.ROWS):
             for c in range(settings.COLS):
@@ -370,9 +350,7 @@ class ChessUI:
                 image_name     = f"{color_prefix}_{piece_type_map[piece.piece_type]}"
                 self.screen.blit(self.pieces_images[image_name], pos)
 
-    # ------------------------------------------------------------------ #
-    # SUGESTII MUTĂRI                                                     #
-    # ------------------------------------------------------------------ #
+
     def draw_suggestions(self, board, selected_square):
         if selected_square is None:
             return
@@ -392,9 +370,8 @@ class ChessUI:
             self.screen.blit(overlay, (col * settings.SQ_SIZE + settings.OFFSET_X,
                                        row * settings.SQ_SIZE + settings.OFFSET_Y))
 
-    # ------------------------------------------------------------------ #
-    # MENIU PROMOVARE                                                     #
-    # ------------------------------------------------------------------ #
+
+    
     def draw_promotion_menu(self, color):
         overlay = pygame.Surface((settings.WIDTH, settings.HEIGHT), pygame.SRCALPHA)
         overlay.fill((0, 0, 0, 150))
@@ -417,9 +394,8 @@ class ChessUI:
             self.screen.blit(self.pieces_images[f"{prefix}_{opt}"], rect)
             self.promotion_rects.append((rect, opt))
 
-    # ------------------------------------------------------------------ #
-    # NUME JUCĂTORI                                                       #
-    # ------------------------------------------------------------------ #
+
+    
     def draw_player_names(self, player_color=chess.WHITE):
         text_color = (255, 255, 255)
 
