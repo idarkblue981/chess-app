@@ -14,6 +14,6 @@ A modern desktop chess app, developed with Python and Pygame. It uses Stockfish 
 
 ## Used technologies
 * **Python 3.x**
-* **Pygame:**
-* **python-chess:**
-* **Stockfish Engine:**
+* **Pygame**
+* **python-chess**
+* **Stockfish Engine**
